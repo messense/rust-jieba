@@ -43,7 +43,6 @@ extern "C" {
     ) -> *mut jieba_t;
     pub fn jieba_free(arg1: *mut jieba_t);
     pub fn jieba_words_free(words: *mut jieba_words_t);
-    pub fn jieba_str_free(str: *mut ::std::os::raw::c_char);
     pub fn jieba_cut(
         handle: *mut jieba_t,
         sentence: *const ::std::os::raw::c_char,

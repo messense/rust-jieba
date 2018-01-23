@@ -1,6 +1,7 @@
 [package]
-name = "jieba"
+name = "rust-jieba"
 version = "0.1.0"
 authors = ["Messense Lv <messense@icloud.com>"]
 
 [dependencies]
+cjieba-sys = { path = "cjieba-sys", version = "0.1" }
