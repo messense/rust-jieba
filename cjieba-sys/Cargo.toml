@@ -1,0 +1,9 @@
+[package]
+name = "cjieba-sys"
+version = "0.1.0"
+authors = ["Messense Lv <messense@icloud.com>"]
+
+[dependencies]
+
+[build-dependencies]
+cmake = "0.1.29"
