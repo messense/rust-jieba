@@ -2,8 +2,9 @@
 name = "cjieba-sys"
 version = "0.1.0"
 authors = ["Messense Lv <messense@icloud.com>"]
+license = "MIT"
 
 [dependencies]
 
 [build-dependencies]
-cmake = "0.1.29"
+cmake = "0.1"

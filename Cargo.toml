@@ -2,6 +2,7 @@
 name = "rust-jieba"
 version = "0.1.0"
 authors = ["Messense Lv <messense@icloud.com>"]
+license = "MIT"
 
 [dependencies]
 cjieba-sys = { path = "cjieba-sys", version = "0.1" }
