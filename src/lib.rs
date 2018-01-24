@@ -7,8 +7,21 @@ use std::borrow::Cow;
 
 use cjieba_sys::*;
 
+#[derive(Debug, Clone)]
 pub struct Jieba {
     inner: *mut jieba_t,
+}
+
+#[derive(Debug, Clone)]
+pub struct Tag {
+    word: String,
+    flag: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct WordWeight {
+    word: String,
+    weight: f64,
 }
 
 impl Jieba {
@@ -121,6 +134,24 @@ impl Jieba {
         }
     }
 
+    pub fn tag(&self, text: &str) -> Vec<Tag> {
+        let c_text = CString::new(text).unwrap();
+        unsafe {
+            let ret = jieba_tag(self.inner, c_text.as_ptr());
+            let c_words = slice::from_raw_parts((*ret).words, (*ret).length);
+            let tags = c_words.into_iter().map(|s| {
+                let word = CStr::from_ptr(*s).to_string_lossy();
+                let mut parts = word.splitn(2, '/');
+                Tag {
+                    word: parts.next().unwrap().to_string(),
+                    flag: parts.next().unwrap().to_string(),
+                }
+            }).collect();
+            jieba_words_free(ret);
+            tags
+        }
+    }
+
     pub fn lookup_tag(&self, word: &str) -> Cow<str> {
         let c_word = CString::new(word).unwrap();
         unsafe {
@@ -133,6 +164,20 @@ impl Jieba {
         let c_word = CString::new(word).unwrap();
         unsafe {
             jieba_add_user_word(self.inner, c_word.as_ptr());
+        }
+    }
+
+    pub fn extract(&self, text: &str, top_k: usize) -> Vec<String> {
+        let c_text = CString::new(text).unwrap();
+        unsafe {
+            let ret = jieba_extract(self.inner, c_text.as_ptr(), top_k as i32);
+            let c_words = slice::from_raw_parts((*ret).words, (*ret).length);
+            let words = c_words.into_iter().map(|s| {
+                let word = CStr::from_ptr(*s);
+                word.to_string_lossy().into_owned()
+            }).collect();
+            jieba_words_free(ret);
+            words
         }
     }
 }
