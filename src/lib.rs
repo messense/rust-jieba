@@ -189,3 +189,6 @@ impl Drop for Jieba {
         }
     }
 }
+
+unsafe impl Send for Jieba {}
+unsafe impl Sync for Jieba {}
