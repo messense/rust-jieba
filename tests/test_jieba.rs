@@ -9,4 +9,19 @@ fn test_jieba() {
     let jieba = jieba();
     let ret = jieba.cut("南京市长江大桥", true);
     assert_eq!(vec!["南京市", "长江大桥"], ret);
+
+    let ret = jieba.cut_all("南京市长江大桥");
+    assert_eq!(vec!["南京", "南京市", "京市", "市长", "长江", "长江大桥", "大桥"], ret);
+
+    let ret = jieba.cut_for_search("南京市长江大桥", true);
+    assert_eq!(vec!["南京", "京市", "南京市", "长江", "大桥", "长江大桥"], ret);
+
+    let ret = jieba.cut_hmm("南京长江大桥");
+    assert_eq!(vec!["南京长", "江大桥"], ret);
+
+    let ret = jieba.cut_small("南京长江大桥", 2);
+    assert_eq!(vec!["南京", "长江", "大桥"], ret);
+
+    let ret = jieba.lookup_tag("工作");
+    assert_eq!("vn", &ret);
 }

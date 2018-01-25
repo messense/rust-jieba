@@ -3,7 +3,6 @@ extern crate cjieba_sys;
 use std::slice;
 use std::path::Path;
 use std::ffi::{CString, CStr};
-use std::borrow::Cow;
 
 use cjieba_sys::*;
 
@@ -152,11 +151,13 @@ impl Jieba {
         }
     }
 
-    pub fn lookup_tag(&self, word: &str) -> Cow<str> {
+    pub fn lookup_tag(&self, word: &str) -> String {
         let c_word = CString::new(word).unwrap();
         unsafe {
             let ret = jieba_lookup_tag(self.inner, c_word.as_ptr());
-            CStr::from_ptr(ret).to_string_lossy()
+            let tag = CStr::from_ptr(ret).to_string_lossy().into_owned();
+            jieba_str_free(ret);
+            tag
         }
     }
 

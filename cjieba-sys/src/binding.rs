@@ -43,6 +43,7 @@ extern "C" {
     ) -> *mut jieba_t;
     pub fn jieba_free(arg1: *mut jieba_t);
     pub fn jieba_words_free(words: *mut jieba_words_t);
+    pub fn jieba_str_free(str: *mut ::std::os::raw::c_char);
     pub fn jieba_cut(
         handle: *mut jieba_t,
         sentence: *const ::std::os::raw::c_char,
@@ -73,7 +74,7 @@ extern "C" {
     pub fn jieba_lookup_tag(
         handle: *mut jieba_t,
         str: *const ::std::os::raw::c_char,
-    ) -> *const ::std::os::raw::c_char;
+    ) -> *mut ::std::os::raw::c_char;
     pub fn jieba_add_user_word(handle: *mut jieba_t, word: *const ::std::os::raw::c_char);
     pub fn jieba_add_user_words(
         handle: *mut jieba_t,
