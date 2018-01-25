@@ -2,9 +2,13 @@
 name = "cjieba-sys"
 version = "0.1.0"
 authors = ["Messense Lv <messense@icloud.com>"]
+description = "unsafe ffi to cppjieba"
 license = "MIT"
-
-[dependencies]
+keywords = ["nlp", "segmentation", "chinese"]
+repository = "https://github.com/messense/rust-jieba.git"
 
 [build-dependencies]
 cmake = "0.1"
+
+[badges]
+travis-ci = { repository = "messense/rust-jieba" }

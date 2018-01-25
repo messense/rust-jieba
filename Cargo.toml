@@ -2,7 +2,13 @@
 name = "rust-jieba"
 version = "0.1.0"
 authors = ["Messense Lv <messense@icloud.com>"]
+description = "Rust binding to cppjieba"
 license = "MIT"
+keywords = ["nlp", "segmentation", "chinese"]
+repository = "https://github.com/messense/rust-jieba.git"
 
 [dependencies]
 cjieba-sys = { path = "cjieba-sys", version = "0.1" }
+
+[badges]
+travis-ci = { repository = "messense/rust-jieba" }
