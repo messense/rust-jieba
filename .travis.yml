@@ -1,8 +1,13 @@
 sudo: required
+dist: trusty
 language: rust
 rust:
   - stable
   - nightly
+addons:
+  apt:
+    packages:
+      - libssl-dev
 
 cache: cargo
 
