@@ -55,4 +55,16 @@ fn test_jieba() {
 
     let ret = jieba.extract("南京市长江大桥", 1);
     assert_eq!(vec!["长江大桥"], ret);
+
+    let ret = jieba.extract_with_weight("南京市长江大桥", 20);
+    assert_eq!(2, ret.len());
+    assert_eq!("长江大桥", &ret[0].word);
+    assert!(ret[0].weight > 11.0);
+    assert_eq!("南京市", &ret[1].word);
+    assert!(ret[1].weight > 8.0);
+
+    let ret = jieba.extract_with_weight("南京市长江大桥", 1);
+    assert_eq!(1, ret.len());
+    assert_eq!("长江大桥", &ret[0].word);
+    assert!(ret[0].weight > 11.0);
 }

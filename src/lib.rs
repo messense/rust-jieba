@@ -231,6 +231,27 @@ impl Jieba {
             words
         }
     }
+
+    pub fn extract_with_weight(&self, text: &str, top_k: usize) -> Vec<WordWeight> {
+        let c_text = CString::new(text).unwrap();
+        let mut words = Vec::new();
+        unsafe {
+            let ret = jieba_extract_with_weight(self.inner, c_text.as_ptr(), top_k as i32);
+            let mut index = 0;
+            let mut c_word = ret.offset(index);
+            while !c_word.is_null() && !(*c_word).word.is_null() {
+                let word = CStr::from_ptr((*c_word).word).to_string_lossy().into_owned();
+                words.push(WordWeight {
+                    word: word,
+                    weight: (*c_word).weight
+                });
+                index += 1;
+                c_word = ret.offset(index);
+            }
+            jieba_word_weight_free(ret);
+        }
+        words
+    }
 }
 
 impl Drop for Jieba {
