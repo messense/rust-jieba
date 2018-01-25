@@ -6,7 +6,7 @@ fn jieba() -> rust_jieba::Jieba {
 
 #[test]
 fn test_jieba() {
-    let jieba = jieba();
+    let mut jieba = jieba();
     let ret = jieba.cut("南京市长江大桥", true);
     assert_eq!(vec!["南京市", "长江大桥"], ret);
 
@@ -31,4 +31,12 @@ fn test_jieba() {
 
     let ret = jieba.lookup_tag("工作");
     assert_eq!("vn", &ret);
+
+    jieba.add_user_word("WTF");
+
+    let ret = jieba.extract("南京市长江大桥", 20);
+    assert_eq!(vec!["长江大桥", "南京市"], ret);
+
+    let ret = jieba.extract("南京市长江大桥", 1);
+    assert_eq!(vec!["长江大桥"], ret);
 }
