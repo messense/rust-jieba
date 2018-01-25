@@ -13,14 +13,14 @@ pub struct Jieba {
 
 #[derive(Debug, Clone)]
 pub struct Tag {
-    word: String,
-    flag: String,
+    pub word: String,
+    pub flag: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct WordWeight {
-    word: String,
-    weight: f64,
+    pub word: String,
+    pub weight: f64,
 }
 
 impl Jieba {
