@@ -11,16 +11,39 @@ pub struct Jieba {
     inner: *mut jieba_t,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Tag {
     pub word: String,
     pub flag: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct WordWeight {
     pub word: String,
     pub weight: f64,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TokenizeMode {
+    Default,
+    Search,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Token(pub String, pub usize, pub usize);
+
+impl Token {
+    pub fn word(&self) -> &str {
+        &self.0
+    }
+
+    pub fn start(&self) -> usize {
+        self.1
+    }
+
+    pub fn end(&self) -> usize {
+        self.2
+    }
 }
 
 impl Jieba {
@@ -166,6 +189,33 @@ impl Jieba {
         unsafe {
             jieba_add_user_word(self.inner, c_word.as_ptr());
         }
+    }
+
+    pub fn tokenize(&self, text: &str, mode: TokenizeMode, hmm: bool) -> Vec<Token> {
+        let c_text = CString::new(text).unwrap();
+        let c_mode = match mode {
+            TokenizeMode::Default => JIEBA_TOKENIZE_MODE_DEFAULT,
+            TokenizeMode::Search => JIEBA_TOKENIZE_MODE_SEARCH,
+        };
+        let is_hmm = if hmm { 1 } else { 0 };
+        let mut tokens = Vec::new();
+        unsafe {
+            let ret = jieba_tokenize(self.inner, c_text.as_ptr(), c_mode, is_hmm);
+            let mut index = 0;
+            let mut c_token = ret.offset(index);
+            while !c_token.is_null() && (*c_token).length > 0 {
+                let start = (*c_token).offset as usize;
+                let end = start + (*c_token).length as usize;
+                let word = text[start..end].to_string();
+                let unicode_start = (*c_token).unicode_offset as usize;
+                let unicode_end = unicode_start + (*c_token).unicode_length as usize;
+                tokens.push(Token(word, unicode_start, unicode_end));
+                index += 1;
+                c_token = ret.offset(index);
+            }
+            jieba_token_free(ret);
+        }
+        tokens
     }
 
     pub fn extract(&self, text: &str, top_k: usize) -> Vec<String> {

@@ -1,7 +1,9 @@
 extern crate rust_jieba;
 
-fn jieba() -> rust_jieba::Jieba {
-    rust_jieba::Jieba::from_dir("cjieba-sys/cppjieba-cabi/cppjieba/dict")
+use rust_jieba::{Jieba, TokenizeMode, Token};
+
+fn jieba() -> Jieba {
+    Jieba::from_dir("cjieba-sys/cppjieba-cabi/cppjieba/dict")
 }
 
 #[test]
@@ -33,6 +35,20 @@ fn test_jieba() {
     assert_eq!("vn", &ret);
 
     jieba.add_user_word("WTF");
+
+    let tokens = jieba.tokenize("南京市长江大桥", TokenizeMode::Default, true);
+    assert_eq!(2, tokens.len());
+    assert_eq!(Token("南京市".to_string(), 0, 3), tokens[0]);
+    assert_eq!(Token("长江大桥".to_string(), 3, 7), tokens[1]);
+
+    let tokens = jieba.tokenize("南京市长江大桥", TokenizeMode::Search, true);
+    assert_eq!(6, tokens.len());
+    assert_eq!(Token("南京".to_string(), 0, 2), tokens[0]);
+    assert_eq!(Token("京市".to_string(), 1, 3), tokens[1]);
+    assert_eq!(Token("南京市".to_string(), 0, 3), tokens[2]);
+    assert_eq!(Token("长江".to_string(), 3, 5), tokens[3]);
+    assert_eq!(Token("大桥".to_string(), 5, 7), tokens[4]);
+    assert_eq!(Token("长江大桥".to_string(), 3, 7), tokens[5]);
 
     let ret = jieba.extract("南京市长江大桥", 20);
     assert_eq!(vec!["长江大桥", "南京市"], ret);
