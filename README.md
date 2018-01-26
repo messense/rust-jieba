@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/messense/rust-jieba.svg?branch=master)](https://travis-ci.org/messense/rust-jieba)
 [![codecov](https://codecov.io/gh/messense/rust-jieba/branch/master/graph/badge.svg)](https://codecov.io/gh/messense/rust-jieba)
+[![Crates.io](https://img.shields.io/crates/v/rust-jieba.svg)](https://crates.io/crates/rust-jieba)
+[![docs.rs](https://docs.rs/rust-jieba/badge.svg)](https://docs.rs/rust-jieba/)
 
 [cppjieba](https://github.com/yanyiwu/cppjieba) Rust binding
 

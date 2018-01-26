@@ -11,7 +11,7 @@
 //!
 //! ## Example
 //!
-//! ```rust,ignore
+//! ```rust
 //! extern crate rust_jieba;
 //!
 //! use rust_jieba::Jieba;
