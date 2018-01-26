@@ -6,6 +6,7 @@ description = "Rust binding to cppjieba"
 license = "MIT"
 keywords = ["nlp", "segmentation", "chinese"]
 repository = "https://github.com/messense/rust-jieba.git"
+readme = "README.md"
 
 [dependencies]
 cjieba-sys = { path = "cjieba-sys", version = "0.1" }

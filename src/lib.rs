@@ -1,3 +1,28 @@
+//! [cppjieba](https://github.com/yanyiwu/cppjieba) Rust binding
+//!
+//! ## Installation
+//!
+//! Add it to your `Cargo.toml`:
+//!
+//! ```toml
+//! [dependencies]
+//! rust-jieba = "0.1"
+//! ```
+//!
+//! ## Example
+//!
+//! ```rust,ignore
+//! extern crate rust_jieba;
+//!
+//! use rust_jieba::Jieba;
+//!
+//! fn main() {
+//!     let jieba = Jieba::from_dir("cjieba-sys/cppjieba-cabi/cppjieba/dict");
+//!     let words = jieba.cut("南京市长江大桥", true);
+//!     assert_eq!(vec!["南京市", "长江大桥"], words);
+//! }
+//! ```
+//!
 extern crate cjieba_sys;
 
 use std::slice;
@@ -11,42 +36,56 @@ pub struct Jieba {
     inner: *mut jieba_t,
 }
 
+/// `Jieba::tag` API return type
 #[derive(Debug, Clone, PartialEq)]
 pub struct Tag {
+    /// Word
     pub word: String,
+    /// Flag
     pub flag: String,
 }
 
+/// Word with weight
 #[derive(Debug, Clone, PartialEq)]
 pub struct WordWeight {
+    /// Word
     pub word: String,
+    /// Weight
     pub weight: f64,
 }
 
+/// Tokenize mode
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TokenizeMode {
+    /// Default mode
     Default,
+    /// Search mode
     Search,
 }
 
+/// Token
 #[derive(Debug, Clone, PartialEq)]
 pub struct Token(pub String, pub usize, pub usize);
 
 impl Token {
+    /// Word of the token
     pub fn word(&self) -> &str {
         &self.0
     }
 
+    /// Unicode start position of the token
     pub fn start(&self) -> usize {
         self.1
     }
 
+    /// Unicode end position of the token
     pub fn end(&self) -> usize {
         self.2
     }
 }
 
 impl Jieba {
+    /// Create a new instance
     pub fn new(dict_path: &str, hmm_path: &str, user_dict_path: &str, idf_path: &str, stop_words_path: &str)
         -> Self
     {
@@ -68,6 +107,7 @@ impl Jieba {
         }
     }
 
+    /// Create a new instance from dict data  directory
     pub fn from_dir(data_dir: &str) -> Self {
         let data_path = Path::new(data_dir);
         let dict_path = data_path.join("jieba.dict.utf8");
@@ -84,6 +124,13 @@ impl Jieba {
         )
     }
 
+    /// Cut the input text
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
+    ///
+    /// `hmm`: enable HMM or not
     pub fn cut(&self, text: &str, hmm: bool) -> Vec<String> {
         let c_text = CString::new(text).unwrap();
         let is_hmm = if hmm { 1 } else { 0 };
@@ -99,6 +146,11 @@ impl Jieba {
         }
     }
 
+    /// Cut the input text, return all possible words
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
     pub fn cut_all(&self, text: &str) -> Vec<String> {
         let c_text = CString::new(text).unwrap();
         unsafe {
@@ -113,6 +165,13 @@ impl Jieba {
         }
     }
 
+    /// Cut the input text in search mode
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
+    ///
+    /// `hmm`: enable HMM or not
     pub fn cut_for_search(&self, text: &str, hmm: bool) -> Vec<String> {
         let c_text = CString::new(text).unwrap();
         let is_hmm = if hmm { 1 } else { 0 };
@@ -128,6 +187,11 @@ impl Jieba {
         }
     }
 
+    /// Cut the input text using HMM
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
     pub fn cut_hmm(&self, text: &str) -> Vec<String> {
         let c_text = CString::new(text).unwrap();
         unsafe {
@@ -142,6 +206,13 @@ impl Jieba {
         }
     }
 
+    /// Cut the input text but limit max word length
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
+    ///
+    /// `max_word_len`: max word length
     pub fn cut_small(&self, text: &str, max_word_len: usize) -> Vec<String> {
         let c_text = CString::new(text).unwrap();
         unsafe {
@@ -156,6 +227,11 @@ impl Jieba {
         }
     }
 
+    /// Tag the input text
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
     pub fn tag(&self, text: &str) -> Vec<Tag> {
         let c_text = CString::new(text).unwrap();
         unsafe {
@@ -174,6 +250,7 @@ impl Jieba {
         }
     }
 
+    /// Look up an single word's tag
     pub fn lookup_tag(&self, word: &str) -> String {
         let c_word = CString::new(word).unwrap();
         unsafe {
@@ -184,6 +261,7 @@ impl Jieba {
         }
     }
 
+    /// Add user defined word
     pub fn add_user_word(&mut self, word: &str) {
         let c_word = CString::new(word).unwrap();
         unsafe {
@@ -191,6 +269,15 @@ impl Jieba {
         }
     }
 
+    /// Tokenize
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
+    ///
+    /// `mode`: tokenize mode
+    ///
+    /// `hmm`: enable HMM or not
     pub fn tokenize(&self, text: &str, mode: TokenizeMode, hmm: bool) -> Vec<Token> {
         let c_text = CString::new(text).unwrap();
         let c_mode = match mode {
@@ -218,6 +305,13 @@ impl Jieba {
         tokens
     }
 
+    /// Extract keywords
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
+    ///
+    /// `top_k`: limit return keywords count
     pub fn extract(&self, text: &str, top_k: usize) -> Vec<String> {
         let c_text = CString::new(text).unwrap();
         unsafe {
@@ -232,6 +326,13 @@ impl Jieba {
         }
     }
 
+    /// Extract keywords with weight
+    ///
+    /// ## Params
+    ///
+    /// `text`: input text
+    ///
+    /// `top_k`: limit return keywords count
     pub fn extract_with_weight(&self, text: &str, top_k: usize) -> Vec<WordWeight> {
         let c_text = CString::new(text).unwrap();
         let mut words = Vec::new();
